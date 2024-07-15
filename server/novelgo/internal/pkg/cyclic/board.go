@@ -1,6 +1,9 @@
 package cyclic
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Board struct {
 	Height          int
@@ -20,6 +23,7 @@ type GridPointState int
 
 const (
 	Undefined GridPointState = iota
+	Empty
 	Black
 	White
 )
@@ -60,6 +64,11 @@ func (b Board) Print() {
 	fmt.Println()
 }
 
-func (b Board) Put(r, c int, color GridPointState) {
-	b.GridPointStates[r][c] = color
+func (b Board) Put(r, c int, color GridPointState) error {
+	if b.GridPointStates[r][c] == Undefined || b.GridPointStates[r][c] == Empty {
+		b.GridPointStates[r][c] = color
+	} else {
+		return errors.New("Attempt to put on occupied grid point")
+	}
+	return nil
 }

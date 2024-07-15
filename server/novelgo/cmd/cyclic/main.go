@@ -29,22 +29,30 @@ func run() error {
 	for {
 		var r, c int
 		var color cyclic.GridPointState
-		fmt.Print("Enter row and col coordinates, separated by space")
-		fmt.Println("(enter any invalid coordiniate to quit):")
-		fmt.Scan(&r, &c)
-		if r < 0 || c < 0 {
-			return errors.New("Invalid coordinate")
+		var e error
+		for {
+			fmt.Print("Enter row and col coordinates, separated by space")
+			fmt.Println("(enter any negative value to quit):")
+			fmt.Scan(&r, &c)
+			if r < 0 || c < 0 {
+				return errors.New("Invalid coordinate")
+			}
+			fmt.Printf("row = %d, col = %d\n", r, c)
+			rr := r % h
+			cr := c % w
+			fmt.Printf("row rounded = %d, col rounded = %d\n", rr, cr)
+			if round%2 == 0 {
+				color = cyclic.Black
+			} else {
+				color = cyclic.White
+			}
+			e = b.Put(rr, cr, color)
+			if e == nil {
+				break
+			} else {
+				fmt.Printf("Error putting on board: %v\n", e)
+			}
 		}
-		fmt.Printf("row = %d, col = %d\n", r, c)
-		rr := r % h
-		cr := c % w
-		fmt.Printf("row rounded = %d, col rounded = %d\n", rr, cr)
-		if round%2 == 0 {
-			color = cyclic.Black
-		} else {
-			color = cyclic.White
-		}
-		b.Put(rr, cr, color)
 		fmt.Printf("board:\n")
 		b.Print()
 		round++
