@@ -1,21 +1,52 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"novelgo/internal/pkg/cyclic"
 )
 
 func main() {
 	fmt.Println("cyclic go game")
-	run()
+	err := run()
+	if err != nil {
+		fmt.Printf("Program exited with error: %v\n", err)
+	}
 }
 
-func run() {
-	b := cyclic.NewBoard(5, 5)
-	fmt.Print("Enter row and col coordinates, separated by space: ")
-	var r, c int
-	fmt.Scan(&r, &c)
-	fmt.Printf("row = %d, col = %d\n", r, c)
-	fmt.Printf("board:\n")
-	b.Print()
+func run() error {
+	fmt.Print("Enter board height and width, separated by space: ")
+	var h, w int
+	fmt.Scan(&h, &w)
+	fmt.Printf("heigth = %d, width = %d\n", h, w)
+
+	if h <= 0 || w <= 0 {
+		return errors.New("Invalid board size")
+	}
+	b := cyclic.NewBoard(h, w)
+
+	round := 0
+	for {
+		var r, c int
+		var color cyclic.GridPointState
+		fmt.Print("Enter row and col coordinates, separated by space")
+		fmt.Println("(enter any invalid coordiniate to quit):")
+		fmt.Scan(&r, &c)
+		if r < 0 || c < 0 {
+			return errors.New("Invalid coordinate")
+		}
+		fmt.Printf("row = %d, col = %d\n", r, c)
+		rr := r % h
+		cr := c % w
+		fmt.Printf("row rounded = %d, col rounded = %d\n", rr, cr)
+		if round%2 == 0 {
+			color = cyclic.Black
+		} else {
+			color = cyclic.White
+		}
+		b.Put(rr, cr, color)
+		fmt.Printf("board:\n")
+		b.Print()
+		round++
+	}
 }

@@ -24,6 +24,9 @@ const (
 	White
 )
 
+const colorRed = "\033[0;31m"
+const colorNone = "\033[0m"
+
 type GridPoint struct {
 	State GridPointState
 }
@@ -31,9 +34,15 @@ type GridPoint struct {
 func (b Board) Print() {
 	b.GridPointStates[0][0] = Black
 	b.GridPointStates[0][1] = White
+	fmt.Print("  ")
+	for c := 0; c < b.Width; c++ {
+		fmt.Printf("%d ", c)
+	}
+	fmt.Println()
 	for r := 0; r < b.Height; r++ {
+		fmt.Printf("%d ", r)
 		for c := 0; c < b.Width; c++ {
-			str := "+ "
+			str := colorRed + "+ " + colorNone
 			switch b.GridPointStates[r][c] {
 			case Black:
 				str = "\u23FA "
@@ -42,7 +51,15 @@ func (b Board) Print() {
 			}
 			fmt.Printf("%s", str)
 		}
-		fmt.Println()
+		fmt.Printf("%d\n", r)
+	}
+	fmt.Print("  ")
+	for c := 0; c < b.Width; c++ {
+		fmt.Printf("%d ", c)
 	}
 	fmt.Println()
+}
+
+func (b Board) Put(r, c int, color GridPointState) {
+	b.GridPointStates[r][c] = color
 }
