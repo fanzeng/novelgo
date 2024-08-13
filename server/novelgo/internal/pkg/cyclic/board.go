@@ -36,8 +36,6 @@ type GridPoint struct {
 }
 
 func (b Board) Print() {
-	b.GridPointStates[0][0] = Black
-	b.GridPointStates[0][1] = White
 	fmt.Print("  ")
 	for c := 0; c < b.Width; c++ {
 		fmt.Printf("%d ", c)
@@ -70,5 +68,55 @@ func (b Board) Put(r, c int, color GridPointState) error {
 	} else {
 		return errors.New("Attempt to put on occupied grid point")
 	}
+	return b.update(r, c, color)
+}
+
+func (b Board) getOpponentColor(color GridPointState) GridPointState {
+	if color == Black {
+		return White
+	}
+	if color == White {
+		return Black
+	}
+	return color
+}
+
+func (b Board) getNeighbors(r, c int) [][]int {
+	var coords [][]int
+	if r > 0 { // TODO: make circular
+		coords = append(coords, []int{r - 1, c})
+	}
+	if c > 0 {
+		coords = append(coords, []int{r, c - 1})
+	}
+	if r+1 < b.Height {
+		coords = append(coords, []int{r + 1, c})
+	}
+	if c+1 < b.Width {
+		coords = append(coords, []int{r, c + 1})
+	}
+	return coords
+}
+
+func (b Board) update(r, c int, color GridPointState) error {
+	neighbors := b.getNeighbors(r, c)
+	fmt.Printf("neighbors = %v\n", neighbors)
+	// TODO: check suicide
+	for _, neighbor := range neighbors {
+		nr := neighbor[0]
+		nc := neighbor[1]
+		if b.GridPointStates[nr][nc] == b.getOpponentColor(color) {
+			fmt.Printf("opponent = %v", neighbor)
+			alive, err := b.checkMarkAlive(r, c)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("alive = %v\n", alive)
+		}
+	}
 	return nil
+}
+
+func (b Board) checkMarkAlive(r, c int) (bool, error) {
+	return true, nil
 }
