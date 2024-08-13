@@ -102,12 +102,10 @@ func (b Board) update(r, c int, color GridPointState) error {
 	neighbors := b.getNeighbors(r, c)
 	fmt.Printf("neighbors = %v\n", neighbors)
 	// TODO: check suicide
-	for _, neighbor := range neighbors {
-		nr := neighbor[0]
-		nc := neighbor[1]
-		if b.GridPointStates[nr][nc] == b.getOpponentColor(color) {
-			fmt.Printf("opponent = %v", neighbor)
-			alive, err := b.checkMarkAlive(r, c)
+	for _, n := range neighbors {
+		if b.GridPointStates[n[0]][n[1]] == b.getOpponentColor(color) {
+			fmt.Printf("opponent = %v", n)
+			alive, err := b.checkMarkAlive(n[0], n[1])
 			if err != nil {
 				return err
 			}
@@ -118,5 +116,49 @@ func (b Board) update(r, c int, color GridPointState) error {
 }
 
 func (b Board) checkMarkAlive(r, c int) (bool, error) {
-	return true, nil
+	visited := make([][]bool, b.Height)
+	for i := range b.Height {
+		visited[i] = make([]bool, b.Width)
+	}
+	cluster := b.getCluster(r, c, visited)
+	fmt.Printf("cluster = %v\n", cluster)
+	// opponentColor := b.getOpponentColor(b.GridPointStates[r][c])
+	// fmt.Printf("opponentColor = %v\n", opponentColor)
+	isAlive := false
+	for _, p := range cluster {
+		for _, n := range b.getNeighbors(p[0], p[1]) {
+			if b.GridPointStates[n[0]][n[1]] == Undefined || b.GridPointStates[n[0]][n[1]] == Empty {
+				isAlive = true
+				break
+			}
+		}
+		if isAlive {
+			break
+		}
+	}
+	if !isAlive {
+		for _, p := range cluster {
+			b.GridPointStates[p[0]][p[1]] = Empty
+		}
+	}
+	return isAlive, nil
+}
+
+func (b Board) getCluster(r, c int, visited [][]bool) [][]int {
+	var cluster [][]int
+	cluster = append(cluster, []int{r, c})
+	visited[r][c] = true
+	color := b.GridPointStates[r][c]
+	for _, n := range b.getNeighbors(r, c) {
+		if visited[n[0]][n[1]] {
+			continue
+		}
+		if b.GridPointStates[n[0]][n[1]] == color {
+			cluster = append(cluster, n)
+			visited[n[0]][n[1]] = true
+			nn := b.getCluster(n[0], n[1], visited)
+			cluster = append(cluster, nn...)
+		}
+	}
+	return cluster
 }
