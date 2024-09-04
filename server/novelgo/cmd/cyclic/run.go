@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"novelgo/internal/pkg/cyclic"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -21,14 +21,17 @@ func run(input_file *string) error {
 		return errors.New("Fail to read version of input file")
 	}
 	version := sc.Text()
-	fmt.Printf("Version %s\n", version)
+	fmt.Printf("novelgo version %s\n", version)
 	if !sc.Scan() {
-		return errors.New("Fail to board size")
+		return errors.New("Fail to read board size")
 	}
 	boardSize := sc.Text()
 	fmt.Printf("Board size %s\n", boardSize)
 
 	h, w, err := parseLine(boardSize)
+	if err != nil {
+		return err
+	}
 	b := cyclic.NewBoard(h, w)
 
 	round := 0
@@ -65,9 +68,14 @@ func run(input_file *string) error {
 }
 
 func runInteractive() error {
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter board height and width, separated by space: ")
 	var h, w int
-	fmt.Scan(&h, &w)
+	line, e := reader.ReadString('\n')
+	if e != nil {
+		return e
+	}
+	fmt.Sscanf(line, "%d %d", &h, &w)
 	fmt.Printf("heigth = %d, width = %d\n", h, w)
 
 	if h <= 0 || w <= 0 {
@@ -77,15 +85,26 @@ func runInteractive() error {
 
 	round := 0
 	for {
-		var r, c int
 		var color cyclic.GridPointState
-		var e error
 		for {
 			fmt.Print("Enter row and col coordinates, separated by space")
 			fmt.Println("(enter any negative value to quit):")
-			fmt.Scan(&r, &c)
+
+			line, e := reader.ReadString('\n')
+			if e != nil {
+				return e
+			}
+			fmt.Print(line)
+			r, c, e := parseLine(line)
+			if errors.Is(e, io.EOF) {
+				fmt.Println("Did you press [ENTER] too soon?")
+				continue
+			} else if e != nil {
+				return e
+			}
 			if r < 0 || c < 0 {
-				return errors.New("Invalid coordinate")
+				fmt.Println("bye~")
+				return nil
 			}
 			fmt.Printf("row = %d, col = %d\n", r, c)
 			rr := r % h
@@ -110,17 +129,16 @@ func runInteractive() error {
 }
 
 func parseLine(line string) (int, int, error) {
-	parts := strings.Split(line, " ")
-	if len(parts) != 2 {
+	var a, b int
+	var extra string
+	line = strings.TrimSpace(line)
+	n, err := fmt.Sscanf(line, "%d %d", &a, &b)
+	if err != nil {
+		return -1, -1, err
+	}
+	n, err = fmt.Sscanf(line, "%d %d%s", &a, &b, &extra)
+	if n != 2 {
 		return -1, -1, errors.New("Expect 2 integer numbers on each line")
-	}
-	a, err := strconv.Atoi(parts[0])
-	if err != nil {
-		return -1, -1, fmt.Errorf("Fail to parse 1st int: %s", parts[0])
-	}
-	b, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return -1, -1, fmt.Errorf("Fail to parse 2nd int: %s", parts[1])
 	}
 	return a, b, nil
 }

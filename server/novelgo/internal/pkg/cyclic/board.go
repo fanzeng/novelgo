@@ -101,7 +101,7 @@ func (b Board) getNeighbors(r, c int) [][]int {
 func (b Board) update(r, c int, color GridPointState) error {
 	neighbors := b.getNeighbors(r, c)
 	fmt.Printf("neighbors = %v\n", neighbors)
-	// TODO: check suicide
+	// TODO: check suicide including whether the new stone can be alive itself
 	for _, n := range neighbors {
 		if b.GridPointStates[n[0]][n[1]] == b.getOpponentColor(color) {
 			fmt.Printf("opponent = %v", n)
