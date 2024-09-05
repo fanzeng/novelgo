@@ -8,7 +8,10 @@ import (
 	"novelgo/internal/pkg/cyclic"
 	"os"
 	"strings"
+	"time"
 )
+
+var version = "v0.1.0"
 
 func run(input_file *string) error {
 	file, err := os.Open(*input_file)
@@ -20,8 +23,9 @@ func run(input_file *string) error {
 	if !sc.Scan() {
 		return errors.New("Fail to read version of input file")
 	}
-	version := sc.Text()
-	fmt.Printf("novelgo version %s\n", version)
+	v := sc.Text()
+	fmt.Printf("gameplay version %s\n", v)
+	fmt.Printf("current version %s\n", version)
 	if !sc.Scan() {
 		return errors.New("Fail to read board size")
 	}
@@ -68,6 +72,16 @@ func run(input_file *string) error {
 }
 
 func runInteractive() error {
+	currentTime := time.Now().Format("20060102_150405")
+	filename := fmt.Sprintf("%s.txt", currentTime)
+
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("Error creating gameplay file:", err)
+		return err
+	}
+	defer file.Close()
+	file.WriteString(version + "\n")
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter board height and width, separated by space: ")
 	var h, w int
@@ -81,7 +95,14 @@ func runInteractive() error {
 	if h <= 0 || w <= 0 {
 		return errors.New("Invalid board size")
 	}
+	line = fmt.Sprintf("%d %d\n", h, w)
+	if _, e = file.WriteString(line); e != nil {
+		fmt.Println("Error writing to file:", e)
+		return e
+	}
 	b := cyclic.NewBoard(h, w)
+	fmt.Printf("board:\n")
+	b.Print()
 
 	round := 0
 	for {
@@ -107,6 +128,11 @@ func runInteractive() error {
 				return nil
 			}
 			fmt.Printf("row = %d, col = %d\n", r, c)
+			line = fmt.Sprintf("%d %d\n", r, c)
+			if _, e = file.WriteString(line); e != nil {
+				fmt.Println("Error writing to file:", e)
+				return e
+			}
 			rr := r % h
 			cr := c % w
 			fmt.Printf("row rounded = %d, col rounded = %d\n", rr, cr)
