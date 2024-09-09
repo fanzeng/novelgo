@@ -13,7 +13,7 @@ import (
 
 var version = "v0.1.0"
 
-func run(input_file *string) error {
+func run(input_file *string, pauseStep bool) error {
 	file, err := os.Open(*input_file)
 	if err != nil {
 		return nil
@@ -67,6 +67,10 @@ func run(input_file *string) error {
 		}
 		b.Print()
 		round++
+		if pauseStep {
+			fmt.Println("Please press [Enter] key to continue")
+			bufio.NewReader(os.Stdin).ReadBytes('\n')
+		}
 	}
 	return nil
 }
