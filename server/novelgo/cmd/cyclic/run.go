@@ -77,12 +77,14 @@ func run(input_file *string, pauseStep bool) error {
 
 func runInteractive() error {
 	currentTime := time.Now().Format("20060102_150405")
-	filename := fmt.Sprintf("%s.txt", currentTime)
+	filename := fmt.Sprintf("gameplays/%s.txt", currentTime)
 
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println("Error creating gameplay file:", err)
 		return err
+	} else {
+		fmt.Printf("Saving gameplay to %s\n", file.Name())
 	}
 	defer file.Close()
 	file.WriteString(version + "\n")
@@ -112,7 +114,7 @@ func runInteractive() error {
 	for {
 		var color cyclic.GridPointState
 		for {
-			fmt.Print("Enter row and col coordinates, separated by space")
+			fmt.Print("Enter row and col coordinates, separated by space ")
 			fmt.Println("(enter any negative value to quit):")
 
 			line, e := reader.ReadString('\n')

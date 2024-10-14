@@ -6,7 +6,7 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	filename := "1.txt"
+	filename := "test/data/simple.txt"
 	run(&filename, false)
 }
 
