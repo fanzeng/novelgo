@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/validate"
 
-	"novelgo/cmd/httpserver/models"
+	"novelgo/internal/pkg/models"
 )
 
 // NewUpdateGameParams creates a new UpdateGameParams object

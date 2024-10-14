@@ -14,7 +14,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/validate"
 
-	"novelgo/cmd/httpserver/models"
+	"novelgo/internal/pkg/models"
 )
 
 // NewCreateGameParams creates a new CreateGameParams object

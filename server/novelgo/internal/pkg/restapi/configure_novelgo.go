@@ -10,10 +10,10 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"novelgo/cmd/httpserver/restapi/operations"
+	"novelgo/internal/pkg/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../httpserver --name Novelgo --spec ../../../api/swagger.yml --principal interface{}
+//go:generate swagger generate server --target ../../../api --name Novelgo --spec ../../../api/swagger.yml --model-package ../internal/pkg/models --server-package ../internal/pkg/restapi --principal interface{}
 
 func configureFlags(api *operations.NovelgoAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }

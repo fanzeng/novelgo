@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"novelgo/cmd/httpserver/models"
+	"novelgo/internal/pkg/models"
 )
 
 // GetGameByIDOKCode is the HTTP code returned for type GetGameByIDOK
