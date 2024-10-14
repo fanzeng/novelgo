@@ -96,7 +96,7 @@ func runInteractive() error {
 		return e
 	}
 	fmt.Sscanf(line, "%d %d", &h, &w)
-	fmt.Printf("heigth = %d, width = %d\n", h, w)
+	fmt.Printf("height = %d, width = %d\n", h, w)
 
 	if h <= 0 || w <= 0 {
 		return errors.New("Invalid board size")
