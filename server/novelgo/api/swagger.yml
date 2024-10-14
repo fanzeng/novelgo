@@ -1,0 +1,114 @@
+swagger: "2.0"
+info:
+  description: "novelgo server API"
+  version: "1.0.0"
+  title: "novelgo"
+paths:
+  /games:
+    get:
+      summary: "List all games"
+      operationId: "listGames"
+      responses:
+        "200":
+          description: "An array of games"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Game"
+    post:
+      summary: "Create a new game"
+      operationId: "createGame"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Game object that needs to be added"
+          required: true
+          schema:
+            $ref: "#/definitions/Game"
+      responses:
+        "201":
+          description: "Game created"
+          schema:
+            $ref: "#/definitions/Game"
+  /games/{gameId}:
+    get:
+      summary: "Get a game by ID"
+      operationId: "getGameById"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Game details"
+          schema:
+            $ref: "#/definitions/Game"
+        "404":
+          description: "Game not found"
+    put:
+      summary: "Update an existing game"
+      operationId: "updateGame"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Game object that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Game"
+      responses:
+        "200":
+          description: "Game updated"
+          schema:
+            $ref: "#/definitions/Game"
+        "404":
+          description: "Game not found"
+    delete:
+      summary: "Delete a game by ID"
+      operationId: "deleteGame"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "204":
+          description: "Game deleted"
+        "404":
+          description: "Game not found"
+definitions:
+  Game:
+    type: "object"
+    required:
+      - Id
+      - Name
+      - Settings
+      - Gameplay
+    properties:
+      Id:
+        type: "string"
+      Name:
+        type: "string"
+      Settings:
+        type: "object"
+        properties:
+          BoardWidth:
+            type: "integer"
+          BoardHeight:
+            type: "integer"
+      Gameplay:
+        type: "object"
+        properties:
+          PlayerMoves:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                Row:
+                  type: "integer"
+                Col:
+                  type: "integer"
