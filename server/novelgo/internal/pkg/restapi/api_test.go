@@ -54,6 +54,49 @@ func TestListGames(t *testing.T) {
 	assert.JSONEq(t, gameJSON, resJSON)
 }
 
+func TestGetGameByID(t *testing.T) {
+	swaggerSpec, err := loads.Analyzed(SwaggerJSON, "")
+	assert.NoError(t, err)
+	api := operations.NewNovelgoAPI(swaggerSpec)
+	server := NewServer(api)
+	defer server.Shutdown()
+
+	// Test getting non-existent item
+	handler := configureAPI(api)
+	req, err := http.NewRequest("GET", "/games/1", nil)
+	assert.NoError(t, err)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	// Test getting existing
+	// Post 1 item to server
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}]}}`
+	req, err = http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	// Get the ID of the posted item
+	var game models.Game
+	err = json.Unmarshal([]byte(rr.Body.String()), &game)
+	assert.NoError(t, err)
+	assert.NoError(t, err)
+	// Call the endpoint again, getting the posted item
+	req, err = http.NewRequest("GET", "/games/"+*game.ID, nil)
+	assert.NoError(t, err)
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusOK, rr.Code)
+	// Remove the ID fields before comparison
+	gameJSON, _ = rmID(gameJSON)
+	resJSON, err := rmID(rr.Body.String())
+	assert.NoError(t, err)
+	// Wrap in array before comparison
+	assert.JSONEq(t, gameJSON, resJSON)
+}
+
 func TestCreateGame(t *testing.T) {
 	swaggerSpec, err := loads.Analyzed(SwaggerJSON, "")
 	assert.NoError(t, err)
