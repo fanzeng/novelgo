@@ -10,6 +10,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
+	"novelgo/internal/pkg/handlers"
+	"novelgo/internal/pkg/models"
 	"novelgo/internal/pkg/restapi/operations"
 )
 
@@ -37,31 +39,52 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.CreateGameHandler == nil {
-		api.CreateGameHandler = operations.CreateGameHandlerFunc(func(params operations.CreateGameParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.CreateGame has not yet been implemented")
-		})
-	}
-	if api.DeleteGameHandler == nil {
-		api.DeleteGameHandler = operations.DeleteGameHandlerFunc(func(params operations.DeleteGameParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.DeleteGame has not yet been implemented")
-		})
-	}
-	if api.GetGameByIDHandler == nil {
-		api.GetGameByIDHandler = operations.GetGameByIDHandlerFunc(func(params operations.GetGameByIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.GetGameByID has not yet been implemented")
-		})
-	}
-	if api.ListGamesHandler == nil {
-		api.ListGamesHandler = operations.ListGamesHandlerFunc(func(params operations.ListGamesParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.ListGames has not yet been implemented")
-		})
-	}
-	if api.UpdateGameHandler == nil {
-		api.UpdateGameHandler = operations.UpdateGameHandlerFunc(func(params operations.UpdateGameParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.UpdateGame has not yet been implemented")
-		})
-	}
+	api.CreateGameHandler = operations.CreateGameHandlerFunc(func(params operations.CreateGameParams) middleware.Responder {
+		newGame := &models.Game{
+			ID:       params.Body.ID,
+			Name:     params.Body.Name,
+			Settings: params.Body.Settings,
+			Gameplay: params.Body.Gameplay,
+		}
+		newGame, err := handlers.CreateGame(newGame)
+		if err != nil {
+			return middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(`{"message": "failed to creat new game"}`))
+			})
+		}
+		return operations.NewCreateGameCreated().WithPayload(newGame)
+	})
+	api.DeleteGameHandler = operations.DeleteGameHandlerFunc(func(params operations.DeleteGameParams) middleware.Responder {
+		err := handlers.DeleteGame(params.GameID)
+		if err != nil {
+			return operations.NewDeleteGameNotFound()
+		}
+		return operations.NewDeleteGameNoContent()
+	})
+	api.GetGameByIDHandler = operations.GetGameByIDHandlerFunc(func(params operations.GetGameByIDParams) middleware.Responder {
+		game, err := handlers.GetGameByID(params.GameID)
+		if err != nil {
+			return operations.NewGetGameByIDNotFound()
+		}
+		return operations.NewGetGameByIDOK().WithPayload(game)
+	})
+	api.ListGamesHandler = operations.ListGamesHandlerFunc(func(params operations.ListGamesParams) middleware.Responder {
+		games := handlers.ListGames()
+		return operations.NewListGamesOK().WithPayload(games)
+	})
+	api.UpdateGameHandler = operations.UpdateGameHandlerFunc(func(params operations.UpdateGameParams) middleware.Responder {
+		updatedGame := &models.Game{
+			ID:       &params.GameID,
+			Name:     params.Body.Name,
+			Settings: params.Body.Settings,
+		}
+		err := handlers.UpdateGame(params.GameID, updatedGame)
+		if err != nil {
+			return operations.NewUpdateGameNotFound()
+		}
+		return operations.NewUpdateGameOK().WithPayload(updatedGame)
+	})
 
 	api.PreServerShutdown = func() {}
 
