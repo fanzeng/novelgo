@@ -3,8 +3,12 @@ package handlers
 import (
 	"errors"
 	"novelgo/internal/pkg/models"
+
+	"github.com/google/uuid"
 )
 
+// Use a map to simulate a DB
+// TODO: Replace with an actual DB
 var games = make(map[string]*models.Game)
 
 // ListGames returns all games
@@ -18,6 +22,8 @@ func ListGames() []*models.Game {
 
 // CreateGame adds a new game
 func CreateGame(game *models.Game) (*models.Game, error) {
+	ID := uuid.New().String()
+	game.ID = &ID
 	games[*game.ID] = game
 	return game, nil
 }
