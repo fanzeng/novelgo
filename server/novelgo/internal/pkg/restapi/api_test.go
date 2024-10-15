@@ -119,6 +119,57 @@ func TestCreateGame(t *testing.T) {
 	assert.JSONEq(t, gameJSON, resJSON)
 }
 
+func TestPutGame(t *testing.T) {
+	swaggerSpec, err := loads.Analyzed(SwaggerJSON, "")
+	assert.NoError(t, err)
+	api := operations.NewNovelgoAPI(swaggerSpec)
+	server := NewServer(api)
+	defer server.Shutdown()
+
+	handler := configureAPI(api)
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}]}}`
+	// Update non-existent game
+	// Expect error
+	req, err := http.NewRequest("PUT", "/games/1", strings.NewReader(gameJSON))
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	// Create a game for update
+	req, err = http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	// Remove the ID fields before comparison
+	gameJSON, _ = rmID(gameJSON)
+	resJSON, err := rmID(rr.Body.String())
+	assert.NoError(t, err)
+	assert.JSONEq(t, gameJSON, resJSON)
+	// Get the ID of the posted item
+	var game models.Game
+	err = json.Unmarshal([]byte(rr.Body.String()), &game)
+	assert.NoError(t, err)
+
+	// Update the game by appending to player moves
+	// Expect success
+	updatedGameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1},{"Row":1,"Col":2}]}}`
+	req, err = http.NewRequest("PUT", "/games/"+*game.ID, strings.NewReader(updatedGameJSON))
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusOK, rr.Code)
+	// Remove the ID fields before comparison
+	updatedGameJSON, _ = rmID(updatedGameJSON)
+	resJSON, err = rmID(rr.Body.String())
+	assert.NoError(t, err)
+	assert.JSONEq(t, updatedGameJSON, resJSON)
+}
+
 func TestDeleteGame(t *testing.T) {
 	swaggerSpec, err := loads.Analyzed(SwaggerJSON, "")
 	assert.NoError(t, err)
@@ -146,7 +197,6 @@ func TestDeleteGame(t *testing.T) {
 	// Get the ID of the posted item
 	var game models.Game
 	err = json.Unmarshal([]byte(rr.Body.String()), &game)
-	assert.NoError(t, err)
 	assert.NoError(t, err)
 	// Call the endpoint again, deleting the posted item
 	req, err = http.NewRequest("DELETE", "/games/"+*game.ID, nil)

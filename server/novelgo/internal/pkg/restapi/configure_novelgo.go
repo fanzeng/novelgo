@@ -78,6 +78,7 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 			ID:       &params.GameID,
 			Name:     params.Body.Name,
 			Settings: params.Body.Settings,
+			Gameplay: params.Body.Gameplay,
 		}
 		err := handlers.UpdateGame(params.GameID, updatedGame)
 		if err != nil {
