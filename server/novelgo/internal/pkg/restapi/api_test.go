@@ -2,7 +2,6 @@ package restapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"novelgo/internal/pkg/models"
@@ -37,8 +36,9 @@ func TestListGames(t *testing.T) {
 	req, err = http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
 	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, http.StatusCreated, rr.Code)
 	// Call the endpoint again, expecting the posted item
 	req, err = http.NewRequest("GET", "/games", nil)
 	assert.NoError(t, err)
@@ -48,7 +48,6 @@ func TestListGames(t *testing.T) {
 	// Remove the ID fields before comparison
 	gameJSON, _ = rmID(gameJSON)
 	resJSON, err := rmID(rr.Body.String())
-	fmt.Println(rr.Body.String())
 	assert.NoError(t, err)
 	// Wrap in array before comparison
 	gameJSON = `[` + gameJSON + `]`
@@ -77,6 +76,43 @@ func TestCreateGame(t *testing.T) {
 	assert.JSONEq(t, gameJSON, resJSON)
 }
 
+func TestDeleteGame(t *testing.T) {
+	swaggerSpec, err := loads.Analyzed(SwaggerJSON, "")
+	assert.NoError(t, err)
+	api := operations.NewNovelgoAPI(swaggerSpec)
+	server := NewServer(api)
+	defer server.Shutdown()
+
+	// Test deleting non-existent item
+	handler := configureAPI(api)
+	req, err := http.NewRequest("DELETE", "/games/1", nil)
+	assert.NoError(t, err)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	// Test deleting existing
+	// Post 1 item to server
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}]}}`
+	req, err = http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	// Get the ID of the posted item
+	var game models.Game
+	err = json.Unmarshal([]byte(rr.Body.String()), &game)
+	assert.NoError(t, err)
+	assert.NoError(t, err)
+	// Call the endpoint again, deleting the posted item
+	req, err = http.NewRequest("DELETE", "/games/"+*game.ID, nil)
+	assert.NoError(t, err)
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusNoContent, rr.Code)
+}
+
 // Helper function to remove ID fields from JSON strings
 func rmID(j string) (string, error) {
 	empty := ""
@@ -96,7 +132,7 @@ func rmID(j string) (string, error) {
 		s, err := json.Marshal(games)
 		return string(s), nil
 	}
-	// Single object marshal succeded
+	// Single object marshal succeeded
 	game.ID = &empty
 	s, err := json.Marshal(game)
 	return string(s), nil
