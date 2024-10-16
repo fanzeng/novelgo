@@ -179,7 +179,7 @@ func TestDeleteGame(t *testing.T) {
 // - j: Serialised string of the game to remove ID, in JSON format.
 //
 // Returns:
-// - string: Serialised string of the game, with remove ID removed.
+// - string: Serialised string of the game, with ID field removed.
 // - error: Error if any.
 func rmID(j string) (string, error) {
 	empty := ""
