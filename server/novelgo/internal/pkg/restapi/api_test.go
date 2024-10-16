@@ -114,10 +114,10 @@ func TestPutGame(t *testing.T) {
 	server := NewServer(api)
 	defer server.Shutdown()
 
-	handler := configureAPI(api)
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}]}}`
 	// Update non-existent game
 	// Expect error
+	handler := configureAPI(api)
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":10,"BoardHeight":10},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}]}}`
 	req, err := http.NewRequest("PUT", "/games/1", strings.NewReader(gameJSON))
 	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
