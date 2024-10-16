@@ -75,7 +75,7 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 	})
 	api.UpdateGameHandler = operations.UpdateGameHandlerFunc(func(params operations.UpdateGameParams) middleware.Responder {
 		updatedGame := &models.Game{
-			ID:       &params.GameID,
+			ID:       &params.GameID, // The ID field in the request body is ignored
 			Name:     params.Body.Name,
 			Settings: params.Body.Settings,
 			Gameplay: params.Body.Gameplay,

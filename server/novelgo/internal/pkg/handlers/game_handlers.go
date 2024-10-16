@@ -21,6 +21,8 @@ func ListGames() []*models.Game {
 }
 
 // CreateGame adds a new game
+// The ID field from the request is ignored
+// A new uuid will be generated for the new game
 func CreateGame(game *models.Game) (*models.Game, error) {
 	ID := uuid.New().String()
 	game.ID = &ID
