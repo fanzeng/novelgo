@@ -174,6 +174,13 @@ func TestDeleteGame(t *testing.T) {
 }
 
 // Helper function to remove ID fields from JSON strings
+//
+// Parameters:
+// - j: Serialised string of the game to remove ID, in JSON format.
+//
+// Returns:
+// - string: Serialised string of the game, with remove ID removed.
+// - error: Error if any.
 func rmID(j string) (string, error) {
 	empty := ""
 	// Try unmarhsal into single object first
@@ -198,6 +205,15 @@ func rmID(j string) (string, error) {
 	return string(s), nil
 }
 
+// Helper function to create a test game on the server when testing other operations
+//
+// Parameters:
+// - gameJSON: Serialised string of the game to create, in JSON format.
+// - h: The http handler to create the new game on.
+//
+// Returns:
+// - string: The ID of the new game returned from server.
+// - error: Error if any.
 func createTestGame(gameJSON string, h *http.Handler) (string, error) {
 	req, err := http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
 	if err != nil {
