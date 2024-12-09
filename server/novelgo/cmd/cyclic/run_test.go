@@ -7,7 +7,7 @@ import (
 
 func TestRun(t *testing.T) {
 	filename := "test/data/simple.txt"
-	run(&filename, false)
+	run(&filename, false, false)
 }
 
 func TestParseLine(t *testing.T) {
