@@ -6,8 +6,12 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	filename := "test/data/simple.txt"
-	run(&filename, false, false)
+	for _, filename := range []string{
+		"test/data/simple.txt",
+		"test/data/surround.txt",
+	} {
+		run(&filename, false, false)
+	}
 }
 
 func TestParseLine(t *testing.T) {
