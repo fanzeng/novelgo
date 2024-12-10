@@ -13,7 +13,7 @@ import (
 
 var version = "v0.1.0"
 
-func run(input_file *string, pauseStep bool) error {
+func run(input_file *string, pauseStep, cyclicLogic bool) error {
 	file, err := os.Open(*input_file)
 	if err != nil {
 		return nil
@@ -36,7 +36,7 @@ func run(input_file *string, pauseStep bool) error {
 	if err != nil {
 		return err
 	}
-	b := cyclic.NewBoard(h, w)
+	b := cyclic.NewBoard(h, w, cyclicLogic)
 
 	round := 0
 	for sc.Scan() {
@@ -75,7 +75,7 @@ func run(input_file *string, pauseStep bool) error {
 	return nil
 }
 
-func runInteractive() error {
+func runInteractive(cyclicLogic bool) error {
 	currentTime := time.Now().Format("20060102_150405")
 	filename := fmt.Sprintf("gameplays/%s.txt", currentTime)
 
@@ -106,7 +106,7 @@ func runInteractive() error {
 		fmt.Println("Error writing to file:", e)
 		return e
 	}
-	b := cyclic.NewBoard(h, w)
+	b := cyclic.NewBoard(h, w, cyclicLogic)
 	fmt.Printf("board:\n")
 	b.Print()
 

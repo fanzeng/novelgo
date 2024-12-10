@@ -9,14 +9,15 @@ type Board struct {
 	Height          int
 	Width           int
 	GridPointStates [][]GridPointState
+	CyclicLogic     bool
 }
 
-func NewBoard(h, w int) *Board {
+func NewBoard(h, w int, cyclicLogic bool) *Board {
 	b := make([][]GridPointState, h)
 	for i := range h {
 		b[i] = make([]GridPointState, w)
 	}
-	return &Board{h, w, b}
+	return &Board{h, w, b, cyclicLogic}
 }
 
 type GridPointState int
@@ -85,15 +86,23 @@ func (b Board) getNeighbors(r, c int) [][]int {
 	var coords [][]int
 	if r > 0 { // TODO: make circular
 		coords = append(coords, []int{r - 1, c})
+	} else if r == 0 && b.CyclicLogic {
+		coords = append(coords, []int{b.Height - 1, c})
 	}
 	if c > 0 {
 		coords = append(coords, []int{r, c - 1})
+	} else if c == 0 && b.CyclicLogic {
+		coords = append(coords, []int{r, b.Width - 1})
 	}
 	if r+1 < b.Height {
 		coords = append(coords, []int{r + 1, c})
+	} else if r+1 == b.Height && b.CyclicLogic {
+		coords = append(coords, []int{0, c})
 	}
 	if c+1 < b.Width {
 		coords = append(coords, []int{r, c + 1})
+	} else if c+1 == b.Height && b.CyclicLogic {
+		coords = append(coords, []int{r, 0})
 	}
 	return coords
 }
