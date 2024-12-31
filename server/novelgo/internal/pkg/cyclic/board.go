@@ -9,14 +9,15 @@ type Board struct {
 	Height          int
 	Width           int
 	GridPointStates [][]GridPointState
+	CyclicLogic     bool
 }
 
-func NewBoard(h, w int) *Board {
+func NewBoard(h, w int, cyclicLogic bool) *Board {
 	b := make([][]GridPointState, h)
 	for i := range h {
 		b[i] = make([]GridPointState, w)
 	}
-	return &Board{h, w, b}
+	return &Board{h, w, b, cyclicLogic}
 }
 
 type GridPointState int
@@ -85,15 +86,23 @@ func (b Board) getNeighbors(r, c int) [][]int {
 	var coords [][]int
 	if r > 0 { // TODO: make circular
 		coords = append(coords, []int{r - 1, c})
+	} else if r == 0 && b.CyclicLogic {
+		coords = append(coords, []int{b.Height - 1, c})
 	}
 	if c > 0 {
 		coords = append(coords, []int{r, c - 1})
+	} else if c == 0 && b.CyclicLogic {
+		coords = append(coords, []int{r, b.Width - 1})
 	}
 	if r+1 < b.Height {
 		coords = append(coords, []int{r + 1, c})
+	} else if r+1 == b.Height && b.CyclicLogic {
+		coords = append(coords, []int{0, c})
 	}
 	if c+1 < b.Width {
 		coords = append(coords, []int{r, c + 1})
+	} else if c+1 == b.Height && b.CyclicLogic {
+		coords = append(coords, []int{r, 0})
 	}
 	return coords
 }
@@ -102,28 +111,38 @@ func (b Board) update(r, c int, color GridPointState) error {
 	neighbors := b.getNeighbors(r, c)
 	fmt.Printf("neighbors = %v\n", neighbors)
 	// TODO: check suicide including whether the new stone can be alive itself
+	isKill := false
 	for _, n := range neighbors {
 		if b.GridPointStates[n[0]][n[1]] == b.getOpponentColor(color) {
 			fmt.Printf("opponent = %v", n)
-			alive, err := b.checkMarkAlive(n[0], n[1])
+			alive, err := b.checkMarkAlive(n[0], n[1], false)
 			if err != nil {
 				return err
 			}
 			fmt.Printf("alive = %v\n", alive)
+			if !alive {
+				isKill = true
+			}
+		}
+	}
+	if !isKill {
+		// Check for suicide if the move is not a kill
+		if alive, _ := b.checkMarkAlive(r, c, true); alive == false {
+			// Roll back the suicidal move
+			b.GridPointStates[r][c] = Empty
+			return errors.New("suicide not allowed")
 		}
 	}
 	return nil
 }
 
-func (b Board) checkMarkAlive(r, c int) (bool, error) {
+func (b Board) checkMarkAlive(r, c int, checkOnly bool) (bool, error) {
 	visited := make([][]bool, b.Height)
 	for i := range b.Height {
 		visited[i] = make([]bool, b.Width)
 	}
 	cluster := b.getCluster(r, c, visited)
 	fmt.Printf("cluster = %v\n", cluster)
-	// opponentColor := b.getOpponentColor(b.GridPointStates[r][c])
-	// fmt.Printf("opponentColor = %v\n", opponentColor)
 	isAlive := false
 	for _, p := range cluster {
 		for _, n := range b.getNeighbors(p[0], p[1]) {
@@ -136,7 +155,7 @@ func (b Board) checkMarkAlive(r, c int) (bool, error) {
 			break
 		}
 	}
-	if !isAlive {
+	if !checkOnly && !isAlive {
 		for _, p := range cluster {
 			b.GridPointStates[p[0]][p[1]] = Empty
 		}
