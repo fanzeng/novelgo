@@ -76,12 +76,12 @@ func TestBoardSuicideWithKillDetection(t *testing.T) {
 	err := b.Put(1, 2, color)
 	b.Print()
 	assert.Nil(t, err, "expected no error but got one")
-	// want := [][]GridPointState{
-	// 	{Empty, White, White, Empty},
-	// 	{White, Empty, White, White},
-	// 	{Black, White, White, Empty},
-	// 	{Black, Black, Black, Black},
-	// }
-	// b.Print()
-	// assert.Equal(t, want, b.GridPointStates, "incorrect gameplay outcome")
+	want := [][]GridPointState{
+		{Undefined, White, White, Undefined},
+		{White, Empty, White, White},
+		{Black, White, White, Undefined},
+		{Black, Black, Black, Black},
+	}
+	b.Print()
+	assert.Equal(t, want, b.GridPointStates, "incorrect gameplay outcome")
 }
