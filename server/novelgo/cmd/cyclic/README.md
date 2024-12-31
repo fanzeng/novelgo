@@ -5,4 +5,4 @@ To run interactively:
 go run .
 
 To run local unit tests:
-refer to the worflow file
+refer to the workflow file
