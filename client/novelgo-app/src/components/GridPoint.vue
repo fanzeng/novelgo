@@ -3,5 +3,5 @@ import { defineProps } from 'vue';
 </script>
 
 <template>
-  <span>+</span>
+  <span class="font-mono text-center">+</span>
 </template>
