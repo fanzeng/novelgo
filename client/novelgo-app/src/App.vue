@@ -12,10 +12,16 @@ const height = 4;
       Novel Go Games
     </p>
   </div>
-  <div class="text-center justify-center">
-    <div id="board" class="m-4">
-      <div v-for="rowIndex in height" :key="rowIndex" class="grid-row">
-        <GridPoint v-for="colIndex in width" :key="colIndex" />
+  <div class="m-4 text-center flex justify-center">
+    <div id="board" class="m-0 justify-center">
+      <div class="grid grid-cols-4 gap-0 w-64 h-64">
+        <div
+          v-for="(item, index) in Array(16).fill('')"
+          :key="index"
+          class="w-12 h-12 flex items-center justify-center"
+        >
+          <GridPoint :state="index % 4" />
+        </div>
       </div>
     </div>
   </div>
