@@ -81,11 +81,11 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 			Settings: params.Body.Settings,
 			Gameplay: params.Body.Gameplay,
 		}
-		err := handlers.UpdateGame(params.GameID, updatedGame)
+		savedGame, err := handlers.UpdateGame(params.GameID, updatedGame)
 		if err != nil {
 			return operations.NewUpdateGameNotFound()
 		}
-		return operations.NewUpdateGameOK().WithPayload(updatedGame)
+		return operations.NewUpdateGameOK().WithPayload(savedGame)
 	})
 
 	api.PreServerShutdown = func() {}

@@ -10,7 +10,17 @@ const board = ref({
 
 const width = computed(() => board.value.width);
 const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
-
+let game = {
+  Id: 'new-game',
+  Name: 'New Game',
+  Settings: {
+    BoardWidth: 5,
+    BoardHeight: 2
+  },
+  Gameplay: {
+    PlayerMoves: []
+  }
+};
 const createNewBoard = async () => {
   try {
     const response = await fetch('http://localhost:58303/games', {
@@ -18,22 +28,11 @@ const createNewBoard = async () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        Id: 'new-game-id',
-        Name: 'New Game',
-        Settings: {
-          BoardWidth: 5,
-          BoardHeight: 2
-        },
-        Gameplay: {
-          PlayerMoves: []
-        }
-      })
+      body: JSON.stringify(game)
     });
 
     if (response.ok) {
-      const game = await response.json();
-      console.log('game =', game)
+      game = await response.json();
       board.value = {
         width: game.Settings.BoardWidth,
         height: game.Settings.BoardHeight,
@@ -44,6 +43,38 @@ const createNewBoard = async () => {
     }
   } catch (error) {
     console.error('Error:', error);
+  }
+};
+
+const updateState = async (index) => {
+  const w = game.Settings.BoardWidth;
+  game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w })
+  try {
+    const response = await fetch(`http://127.0.0.1:58303/games/${game.Id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(game)
+    });
+
+    if (response.ok) {
+      console.log('State updated successfully');
+      game = await response.json();
+      board.value.gridPoints = [...game.Gameplay.BoardGridPoints];
+    } else {
+      console.error('Failed to update state');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+const handleClick = (index) => {
+  if (board.value.gridPoints[index] <= 1) {
+    updateState(index);
+  } else {
+    alert('invalid');
   }
 };
 
@@ -68,7 +99,7 @@ onMounted(() => {
             :key="index"
             class="w-12 h-12 flex items-center justify-center"
           >
-            <GridPoint :state="item" />
+            <GridPoint :state="item" @click="handleClick(index)"/>
           </div>
         </div>
       </div>
