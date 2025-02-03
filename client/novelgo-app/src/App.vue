@@ -32,11 +32,12 @@ const createNewBoard = async () => {
     });
 
     if (response.ok) {
-      const newBoard = await response.json();
+      const game = await response.json();
+      console.log('game =', game)
       board.value = {
-        width: newBoard.Settings.BoardWidth,
-        height: newBoard.Settings.BoardHeight,
-        gridPoints: newBoard.Gameplay.PlayerMoves.map(move => move.state) // Assuming the server returns the state of each grid point
+        width: game.Settings.BoardWidth,
+        height: game.Settings.BoardHeight,
+        gridPoints: game.Gameplay.BoardGridPoints,
       };
     } else {
       console.error('Failed to create a new board');

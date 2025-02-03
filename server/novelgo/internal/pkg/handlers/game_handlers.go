@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"novelgo/internal/pkg/cyclic"
 	"novelgo/internal/pkg/models"
 
 	"github.com/google/uuid"
@@ -27,6 +28,13 @@ func CreateGame(game *models.Game) (*models.Game, error) {
 	ID := uuid.New().String()
 	game.ID = &ID
 	games[*game.ID] = game
+
+	b := cyclic.NewBoard(int(game.Settings.BoardHeight), int(game.Settings.BoardWidth), true)
+	arr := b.GetGridPointsAsArray()
+	game.Gameplay.BoardGridPoints = make([]int64, len(arr))
+	for i, s := range arr {
+		game.Gameplay.BoardGridPoints[i] = int64(s)
+	}
 	return game, nil
 }
 

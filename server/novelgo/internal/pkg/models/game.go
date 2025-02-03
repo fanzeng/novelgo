@@ -196,6 +196,9 @@ func (m *Game) UnmarshalBinary(b []byte) error {
 // swagger:model GameGameplay
 type GameGameplay struct {
 
+	// board grid points
+	BoardGridPoints []int64 `json:"BoardGridPoints"`
+
 	// player moves
 	PlayerMoves []*GameGameplayPlayerMovesItems0 `json:"PlayerMoves"`
 }
