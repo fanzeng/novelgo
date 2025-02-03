@@ -1,17 +1,54 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import GridPoint from '@/components/GridPoint.vue';
 
-const board = {
+const board = ref({
   width: 5,
   height: 2,
   gridPoints: [1, 2, 1, 1, 2, 1, 2, 1, 1, 1]
-}
+});
 
-const width = board.width;
-const height = board.height;
-const gridClass = computed(() => `grid grid-cols-${width} gap-0`);
-const totalItems = width * height;
+const width = computed(() => board.value.width);
+const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
+
+const createNewBoard = async () => {
+  try {
+    const response = await fetch('http://localhost:58303/games', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        Id: 'new-game-id',
+        Name: 'New Game',
+        Settings: {
+          BoardWidth: 5,
+          BoardHeight: 2
+        },
+        Gameplay: {
+          PlayerMoves: []
+        }
+      })
+    });
+
+    if (response.ok) {
+      const newBoard = await response.json();
+      board.value = {
+        width: newBoard.Settings.BoardWidth,
+        height: newBoard.Settings.BoardHeight,
+        gridPoints: newBoard.Gameplay.PlayerMoves.map(move => move.state) // Assuming the server returns the state of each grid point
+      };
+    } else {
+      console.error('Failed to create a new board');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+onMounted(() => {
+  createNewBoard();
+});
 </script>
 
 <template>
