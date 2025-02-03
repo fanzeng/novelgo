@@ -2,8 +2,14 @@
 import { computed } from 'vue';
 import GridPoint from '@/components/GridPoint.vue';
 
-const width = 5;
-const height = 2;
+const board = {
+  width: 5,
+  height: 2,
+  gridPoints: [1, 2, 1, 1, 2, 1, 2, 1, 1, 1]
+}
+
+const width = board.width;
+const height = board.height;
 const gridClass = computed(() => `grid grid-cols-${width} gap-0`);
 const totalItems = width * height;
 </script>
@@ -20,11 +26,11 @@ const totalItems = width * height;
       <div id="board" class="m-0 justify-center">
         <div :class="gridClass">
           <div
-            v-for="(item, index) in totalItems"
+            v-for="(item, index) in board.gridPoints"
             :key="index"
             class="w-12 h-12 flex items-center justify-center"
           >
-            <GridPoint :state="index % 4" />
+            <GridPoint :state="item" />
           </div>
         </div>
       </div>

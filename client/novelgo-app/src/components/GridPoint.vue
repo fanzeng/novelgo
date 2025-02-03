@@ -15,6 +15,7 @@ const props = defineProps({
     <template v-else-if="state === 3">○</template>
   </div>
 </template>
+
 <style scoped>
   .font-thin {
     font-weight: 100;
