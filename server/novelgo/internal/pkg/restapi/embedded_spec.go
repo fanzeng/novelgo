@@ -156,6 +156,12 @@ func init() {
         "Gameplay": {
           "type": "object",
           "properties": {
+            "BoardGridPoints": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
             "PlayerMoves": {
               "type": "array",
               "items": {
@@ -332,6 +338,12 @@ func init() {
         "Gameplay": {
           "type": "object",
           "properties": {
+            "BoardGridPoints": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
             "PlayerMoves": {
               "type": "array",
               "items": {
@@ -362,6 +374,12 @@ func init() {
     "GameGameplay": {
       "type": "object",
       "properties": {
+        "BoardGridPoints": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
         "PlayerMoves": {
           "type": "array",
           "items": {

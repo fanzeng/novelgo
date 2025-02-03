@@ -9,6 +9,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/rs/cors"
 
 	"novelgo/internal/pkg/handlers"
 	"novelgo/internal/pkg/models"
@@ -80,18 +81,25 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 			Settings: params.Body.Settings,
 			Gameplay: params.Body.Gameplay,
 		}
-		err := handlers.UpdateGame(params.GameID, updatedGame)
+		savedGame, err := handlers.UpdateGame(params.GameID, updatedGame)
 		if err != nil {
 			return operations.NewUpdateGameNotFound()
 		}
-		return operations.NewUpdateGameOK().WithPayload(updatedGame)
+		return operations.NewUpdateGameOK().WithPayload(savedGame)
 	})
 
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}
 
-	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
+	corsMiddleware := cors.New(cors.Options{
+        AllowedOrigins:   []string{"*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedHeaders:   []string{"Content-Type"},
+        AllowCredentials: true,
+    })
+
+    return setupGlobalMiddleware(corsMiddleware.Handler(api.Serve(setupMiddlewares)))
 }
 
 // The TLS configuration before HTTPS server starts.
@@ -115,5 +123,14 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+        handler.ServeHTTP(w, r)
+    })
 }

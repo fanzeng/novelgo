@@ -181,3 +181,14 @@ func (b Board) getCluster(r, c int, visited [][]bool) [][]int {
 	}
 	return cluster
 }
+
+func (b Board) GetGridPointsAsArray() []int {
+	a := make([]int, b.Height*b.Width)
+	for r := 0; r < b.Height; r++ {
+		fmt.Printf("%d ", r)
+		for c := 0; c < b.Width; c++ {
+			a[r*b.Width + c] = int(b.GridPointStates[r][c])
+		}
+	}
+	return a
+}

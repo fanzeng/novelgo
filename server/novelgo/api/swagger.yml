@@ -112,3 +112,7 @@ definitions:
                   type: "integer"
                 Col:
                   type: "integer"
+          BoardGridPoints:
+            type: "array"
+            items:
+              type: "integer"
