@@ -156,16 +156,28 @@ func init() {
         "Gameplay": {
           "type": "object",
           "properties": {
+            "BoardGridPoints": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
             "PlayerMoves": {
               "type": "array",
               "items": {
                 "type": "object",
+                "required": [
+                  "Row",
+                  "Col"
+                ],
                 "properties": {
                   "Col": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-omitempty": false
                   },
                   "Row": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-omitempty": false
                   }
                 }
               }
@@ -332,6 +344,12 @@ func init() {
         "Gameplay": {
           "type": "object",
           "properties": {
+            "BoardGridPoints": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
             "PlayerMoves": {
               "type": "array",
               "items": {
@@ -362,6 +380,12 @@ func init() {
     "GameGameplay": {
       "type": "object",
       "properties": {
+        "BoardGridPoints": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
         "PlayerMoves": {
           "type": "array",
           "items": {
@@ -372,12 +396,18 @@ func init() {
     },
     "GameGameplayPlayerMovesItems0": {
       "type": "object",
+      "required": [
+        "Row",
+        "Col"
+      ],
       "properties": {
         "Col": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         },
         "Row": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         }
       }
     },

@@ -107,8 +107,17 @@ definitions:
             type: "array"
             items:
               type: "object"
+              required:
+                - Row
+                - Col
               properties:
                 Row:
                   type: "integer"
+                  x-omitempty: false
                 Col:
                   type: "integer"
+                  x-omitempty: false
+          BoardGridPoints:
+            type: "array"
+            items:
+              type: "integer"

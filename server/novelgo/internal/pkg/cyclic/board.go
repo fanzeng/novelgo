@@ -38,13 +38,13 @@ type GridPoint struct {
 
 func (b Board) Print() {
 	fmt.Print("  ")
-	for c := 0; c < b.Width; c++ {
+	for c := range b.Width {
 		fmt.Printf("%d ", c)
 	}
 	fmt.Println()
-	for r := 0; r < b.Height; r++ {
+	for r := range b.Height {
 		fmt.Printf("%d ", r)
-		for c := 0; c < b.Width; c++ {
+		for c := range b.Width {
 			str := colorRed + "+ " + colorNone
 			switch b.GridPointStates[r][c] {
 			case Black:
@@ -57,7 +57,7 @@ func (b Board) Print() {
 		fmt.Printf("%d\n", r)
 	}
 	fmt.Print("  ")
-	for c := 0; c < b.Width; c++ {
+	for c := range b.Width {
 		fmt.Printf("%d ", c)
 	}
 	fmt.Println()
@@ -84,24 +84,24 @@ func (b Board) getOpponentColor(color GridPointState) GridPointState {
 
 func (b Board) getNeighbors(r, c int) [][]int {
 	var coords [][]int
-	if r > 0 { // TODO: make circular
+	if r > 0 {
 		coords = append(coords, []int{r - 1, c})
-	} else if r == 0 && b.CyclicLogic {
+	} else if r == 0 && b.CyclicLogic && b.Height > 1 {
 		coords = append(coords, []int{b.Height - 1, c})
 	}
 	if c > 0 {
 		coords = append(coords, []int{r, c - 1})
-	} else if c == 0 && b.CyclicLogic {
+	} else if c == 0 && b.CyclicLogic && b.Width > 1 {
 		coords = append(coords, []int{r, b.Width - 1})
 	}
 	if r+1 < b.Height {
 		coords = append(coords, []int{r + 1, c})
-	} else if r+1 == b.Height && b.CyclicLogic {
+	} else if r+1 == b.Height && b.CyclicLogic && b.Height > 1 {
 		coords = append(coords, []int{0, c})
 	}
 	if c+1 < b.Width {
 		coords = append(coords, []int{r, c + 1})
-	} else if c+1 == b.Height && b.CyclicLogic {
+	} else if c+1 == b.Width && b.CyclicLogic && b.Width > 1 {
 		coords = append(coords, []int{r, 0})
 	}
 	return coords
@@ -114,7 +114,7 @@ func (b Board) update(r, c int, color GridPointState) error {
 	isKill := false
 	for _, n := range neighbors {
 		if b.GridPointStates[n[0]][n[1]] == b.getOpponentColor(color) {
-			fmt.Printf("opponent = %v", n)
+			fmt.Printf("opponent = %v\n", n)
 			alive, err := b.checkMarkAlive(n[0], n[1], false)
 			if err != nil {
 				return err
@@ -180,4 +180,15 @@ func (b Board) getCluster(r, c int, visited [][]bool) [][]int {
 		}
 	}
 	return cluster
+}
+
+func (b Board) GetGridPointsAsArray() []int {
+	a := make([]int, b.Height*b.Width)
+	for r := range b.Height {
+		fmt.Printf("%d ", r)
+		for c := range b.Width {
+			a[r*b.Width + c] = int(b.GridPointStates[r][c])
+		}
+	}
+	return a
 }
