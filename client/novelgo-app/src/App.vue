@@ -1,26 +1,39 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, toRaw } from 'vue';
 import GridPoint from '@/components/GridPoint.vue';
+import GameSettings from '@/components/GameSettings.vue';
 
-const board = ref({
-  width: 5,
-  height: 2,
-  gridPoints: [1, 2, 1, 1, 2, 1, 2, 1, 1, 1]
-});
-
-const width = computed(() => board.value.width);
-const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
 let game = {
-  Id: 'new-game',
-  Name: 'New Game',
+  Id: '',
+  Name: 'Untitled Game',
   Settings: {
     BoardWidth: 5,
-    BoardHeight: 2
+    BoardHeight: 5
   },
   Gameplay: {
     PlayerMoves: []
   }
 };
+
+const board = ref({
+  Id: '',
+  width: 0,
+  height: 0,
+  gridPoints: [],
+})
+
+const width = computed(() => board.value.width);
+const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
+
+const showSettings = ref(false);
+
+const createNewGame = async (settings) => {
+  game.Settings.BoardWidth = settings.BoardWidth;
+  game.Settings.BoardHeight = settings.BoardHeight;
+  showSettings.value = false;
+  await createNewBoard();
+};
+
 const createNewBoard = async () => {
   try {
     const response = await fetch('http://localhost:58303/games', {
@@ -34,6 +47,7 @@ const createNewBoard = async () => {
     if (response.ok) {
       game = await response.json();
       board.value = {
+        Id: game.Id,
         width: game.Settings.BoardWidth,
         height: game.Settings.BoardHeight,
         gridPoints: game.Gameplay.BoardGridPoints,
@@ -48,7 +62,7 @@ const createNewBoard = async () => {
 
 const updateState = async (index) => {
   const w = game.Settings.BoardWidth;
-  game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w })
+  game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w });
   try {
     const response = await fetch(`http://127.0.0.1:58303/games/${game.Id}`, {
       method: 'PUT',
@@ -79,7 +93,7 @@ const handleClick = (index) => {
 };
 
 onMounted(() => {
-  createNewBoard();
+  // createNewBoard();
 });
 </script>
 
@@ -92,6 +106,15 @@ onMounted(() => {
       </p>
     </div>
     <div class="m-4 text-center flex justify-center">
+      <button v-if="!showSettings" @click="showSettings = true"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >New Game</button>
+      <GameSettings v-if="showSettings" @create-game="createNewGame" />
+    </div>
+    <div v-if="board.Id" class="m-4 text-center flex justify-center">
+      <div>{{board.Id}}</div>
+    </div>
+    <div v-if="board.Id" class="m-4 text-center flex justify-center">
       <div id="board" class="m-0 justify-center">
         <div :class="gridClass">
           <div
@@ -99,7 +122,7 @@ onMounted(() => {
             :key="index"
             class="w-12 h-12 flex items-center justify-center"
           >
-            <GridPoint :state="item" @click="handleClick(index)"/>
+            <GridPoint :state="item" @click="handleClick(index)" />
           </div>
         </div>
       </div>
