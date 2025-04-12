@@ -59,16 +59,17 @@ func UpdateGame(id string, game *models.Game) (*models.Game, error) {
 	lastMove := moves[len(moves)-1]
 	fmt.Printf("last move = %v", lastMove)
 	*oldMoves = append(*oldMoves, lastMove)
-	fmt.Printf("oldMoves = %v", oldMoves)
+	fmt.Printf("oldMoves = %v", *oldMoves)
 	b := cyclic.NewBoard(int(game.Settings.BoardHeight), int(game.Settings.BoardWidth), true)
-	for i, move := range old.Gameplay.PlayerMoves {
+	for i, move := range *oldMoves {
+		fmt.Printf("oves = %v", move)
 		var color cyclic.GridPointState
 		if i % 2 == 0 {
 			color = cyclic.Black
 		} else {
 			color = cyclic.White
 		}
-		b.Put(int(move.Row), int(move.Col), color)
+		b.Put(int(*move.Row), int(*move.Col), color)
 	}
 	arr := b.GetGridPointsAsArray()
 	fmt.Printf("arr = %v", arr)

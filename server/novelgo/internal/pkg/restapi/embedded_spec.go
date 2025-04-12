@@ -166,12 +166,18 @@ func init() {
               "type": "array",
               "items": {
                 "type": "object",
+                "required": [
+                  "Row",
+                  "Col"
+                ],
                 "properties": {
                   "Col": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-omitempty": false
                   },
                   "Row": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-omitempty": false
                   }
                 }
               }
@@ -390,12 +396,18 @@ func init() {
     },
     "GameGameplayPlayerMovesItems0": {
       "type": "object",
+      "required": [
+        "Row",
+        "Col"
+      ],
       "properties": {
         "Col": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         },
         "Row": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         }
       }
     },

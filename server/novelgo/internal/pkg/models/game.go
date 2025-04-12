@@ -306,14 +306,47 @@ func (m *GameGameplay) UnmarshalBinary(b []byte) error {
 type GameGameplayPlayerMovesItems0 struct {
 
 	// col
-	Col int64 `json:"Col,omitempty"`
+	// Required: true
+	Col *int64 `json:"Col"`
 
 	// row
-	Row int64 `json:"Row,omitempty"`
+	// Required: true
+	Row *int64 `json:"Row"`
 }
 
 // Validate validates this game gameplay player moves items0
 func (m *GameGameplayPlayerMovesItems0) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateCol(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRow(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *GameGameplayPlayerMovesItems0) validateCol(formats strfmt.Registry) error {
+
+	if err := validate.Required("Col", "body", m.Col); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GameGameplayPlayerMovesItems0) validateRow(formats strfmt.Registry) error {
+
+	if err := validate.Required("Row", "body", m.Row); err != nil {
+		return err
+	}
+
 	return nil
 }
 
