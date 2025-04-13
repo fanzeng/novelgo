@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, toRaw } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import GridPoint from '@/components/GridPoint.vue';
 import GameSettings from '@/components/GameSettings.vue';
 
@@ -20,9 +20,10 @@ const board = ref({
   width: 0,
   height: 0,
   gridPoints: [],
-})
+});
 
 const width = computed(() => board.value.width);
+const height = computed(() => board.value.height);
 const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
 
 const showSettings = ref(false);
@@ -115,7 +116,8 @@ onMounted(() => {
       <div>{{board.Id}}</div>
     </div>
     <div v-if="board.Id" class="m-4 text-center flex justify-center">
-      <div id="board" class="m-0 justify-center">
+      <div id="board" class="m-0 justify-center relative">
+        <div class="grid-lines"></div>
         <div :class="gridClass">
           <div
             v-for="(item, index) in board.gridPoints"
@@ -130,4 +132,19 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.grid-lines {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: calc(100% - 48px);
+  height: calc(100% - 48px);
+  background-image:
+    linear-gradient(to right, #8b5a2b 1px, transparent 1px),
+    linear-gradient(to bottom, #8b5a2b 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: 0 0, 0 0;
+  border-right: 1px solid #8b5a2b;
+  border-bottom: 1px solid #8b5a2b
+}
+</style>
