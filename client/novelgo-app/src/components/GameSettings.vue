@@ -20,13 +20,13 @@ const submitSettings = () => {
     <form @submit.prevent="submitSettings">
       <div>
         <label for="boardWidth">Board Width:</label>
-        <input type="number" v-model.number="settings.BoardWidth" id="boardWidth" required
+        <input type="number" v-model.number="settings.BoardWidth" id="boardWidth" min="0" max="19" required
           class="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded m-2 p-2"
         />
       </div>
       <div>
         <label for="boardHeight">Board Height:</label>
-        <input type="number" v-model.number="settings.BoardHeight" id="boardHeight" required
+        <input type="number" v-model.number="settings.BoardHeight" id="boardHeight" min="0" max="19" required
           class="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded m-2 p-2"
         />
       </div>

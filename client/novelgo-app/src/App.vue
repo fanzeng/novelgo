@@ -23,7 +23,6 @@ const board = ref({
 });
 
 const width = computed(() => board.value.width);
-const height = computed(() => board.value.height);
 const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
 
 const showSettings = ref(false);
@@ -116,7 +115,7 @@ onMounted(() => {
       <div>{{board.Id}}</div>
     </div>
     <div v-if="board.Id" class="m-4 text-center flex justify-center">
-      <div id="board" class="m-0 justify-center relative">
+      <div id="board" class="m-4 justify-center relative">
         <div class="grid-lines"></div>
         <div :class="gridClass">
           <div
