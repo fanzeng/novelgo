@@ -8,7 +8,8 @@ let game = {
   Name: 'Untitled Game',
   Settings: {
     BoardWidth: 5,
-    BoardHeight: 5
+    BoardHeight: 5,
+    CyclicLogic: true,
   },
   Gameplay: {
     PlayerMoves: []
@@ -16,9 +17,10 @@ let game = {
 };
 
 const board = ref({
-  Id: '',
+  id: '',
   width: 0,
   height: 0,
+  cyclicLogic: true,
   gridPoints: [],
 });
 
@@ -31,29 +33,33 @@ let stoneColor = 'empty';
 let moveNumber = ref(0);
 
 const createNewGame = async (settings) => {
-  game.Settings.BoardWidth = settings.BoardWidth;
-  game.Settings.BoardHeight = settings.BoardHeight;
   showSettings.value = false;
-  await createNewBoard();
+  moveNumber.value = 0;
+  await createNewBoard(settings);
 };
 
-const createNewBoard = async () => {
+const createNewBoard = async (settings) => {
+  const newGame = {
+    Settings: settings,
+    Gameplay: {}
+  }
   try {
     const response = await fetch('http://localhost:58303/games', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(game)
+      body: JSON.stringify(newGame)
     });
 
     if (response.ok) {
       game = await response.json();
       board.value = {
-        Id: game.Id,
+        id: game.Id,
         width: game.Settings.BoardWidth,
         height: game.Settings.BoardHeight,
         gridPoints: game.Gameplay.BoardGridPoints,
+        cyclicLogic: game.Settings.CyclicLogic,
       };
       stoneColor = moveNumber.value % 2 == 0 ? 'black' : 'white';
     } else {
@@ -66,6 +72,7 @@ const createNewBoard = async () => {
 
 const updateState = async (index) => {
   const w = game.Settings.BoardWidth;
+  if (!game.Gameplay.PlayerMoves) game.Gameplay.PlayerMoves = [];
   game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w });
   try {
     const response = await fetch(`http://127.0.0.1:58303/games/${game.Id}`, {
@@ -120,10 +127,13 @@ onMounted(() => {
       >New Game</button>
       <GameSettings v-if="showSettings" @create-game="createNewGame" />
     </div>
-    <div v-if="board.Id" class="m-4 text-center flex justify-center">
-      <div class="text-xs text-gray-800">{{board.Id}}</div>
+    <div v-if="board.id" class="m-4 text-center flex justify-center">
+      <div class="text-sm text-gray-400">{{board.id}}</div>
     </div>
-    <div v-if="board.Id" class="m-4 text-center flex justify-center">
+    <div v-if="board.id" class="m-4 text-center flex justify-center">
+      <div>Cyclic: {{board.cyclicLogic}}</div>
+    </div>
+    <div v-if="board.id" class="m-4 text-center flex justify-center">
       <div id="board" class="m-4 justify-center relative">
         <div class="grid-lines"></div>
         <div :class="gridClass">

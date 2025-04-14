@@ -21,16 +21,13 @@ import (
 type Game struct {
 
 	// gameplay
-	// Required: true
-	Gameplay *GameGameplay `json:"Gameplay"`
+	Gameplay *GameGameplay `json:"Gameplay,omitempty"`
 
 	// Id
-	// Required: true
-	ID *string `json:"Id"`
+	ID string `json:"Id,omitempty"`
 
 	// name
-	// Required: true
-	Name *string `json:"Name"`
+	Name string `json:"Name,omitempty"`
 
 	// settings
 	// Required: true
@@ -45,14 +42,6 @@ func (m *Game) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateName(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateSettings(formats); err != nil {
 		res = append(res, err)
 	}
@@ -64,9 +53,8 @@ func (m *Game) Validate(formats strfmt.Registry) error {
 }
 
 func (m *Game) validateGameplay(formats strfmt.Registry) error {
-
-	if err := validate.Required("Gameplay", "body", m.Gameplay); err != nil {
-		return err
+	if swag.IsZero(m.Gameplay) { // not required
+		return nil
 	}
 
 	if m.Gameplay != nil {
@@ -78,24 +66,6 @@ func (m *Game) validateGameplay(formats strfmt.Registry) error {
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *Game) validateID(formats strfmt.Registry) error {
-
-	if err := validate.Required("Id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Game) validateName(formats strfmt.Registry) error {
-
-	if err := validate.Required("Name", "body", m.Name); err != nil {
-		return err
 	}
 
 	return nil
@@ -142,6 +112,10 @@ func (m *Game) ContextValidate(ctx context.Context, formats strfmt.Registry) err
 func (m *Game) contextValidateGameplay(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Gameplay != nil {
+
+		if swag.IsZero(m.Gameplay) { // not required
+			return nil
+		}
 
 		if err := m.Gameplay.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
@@ -366,46 +340,6 @@ func (m *GameGameplayPlayerMovesItems0) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *GameGameplayPlayerMovesItems0) UnmarshalBinary(b []byte) error {
 	var res GameGameplayPlayerMovesItems0
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// GameSettings game settings
-//
-// swagger:model GameSettings
-type GameSettings struct {
-
-	// board height
-	BoardHeight int64 `json:"BoardHeight,omitempty"`
-
-	// board width
-	BoardWidth int64 `json:"BoardWidth,omitempty"`
-}
-
-// Validate validates this game settings
-func (m *GameSettings) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this game settings based on context it is used
-func (m *GameSettings) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *GameSettings) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *GameSettings) UnmarshalBinary(b []byte) error {
-	var res GameSettings
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
