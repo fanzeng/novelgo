@@ -26,6 +26,9 @@ const width = computed(() => board.value.width);
 const gridClass = computed(() => `grid grid-cols-${width.value} gap-0`);
 
 const showSettings = ref(false);
+const cursorPosition = ref({ x: 0, y: 0 });
+let stoneColor = 'empty';
+let moveNumber = ref(0);
 
 const createNewGame = async (settings) => {
   game.Settings.BoardWidth = settings.BoardWidth;
@@ -52,6 +55,7 @@ const createNewBoard = async () => {
         height: game.Settings.BoardHeight,
         gridPoints: game.Gameplay.BoardGridPoints,
       };
+      stoneColor = moveNumber.value % 2 == 0 ? 'black' : 'white';
     } else {
       console.error('Failed to create a new board');
     }
@@ -73,9 +77,10 @@ const updateState = async (index) => {
     });
 
     if (response.ok) {
-      console.log('State updated successfully');
       game = await response.json();
       board.value.gridPoints = [...game.Gameplay.BoardGridPoints];
+      moveNumber.value++;
+      stoneColor = moveNumber.value % 2 == 0 ? 'black' : 'white';
     } else {
       console.error('Failed to update state');
     }
@@ -88,12 +93,16 @@ const handleClick = (index) => {
   if (board.value.gridPoints[index] <= 1) {
     updateState(index);
   } else {
-    alert('invalid');
+    // alert('invalid');
   }
 };
 
+const handleMouseMove = (event) => {
+  cursorPosition.value = { x: event.clientX, y: event.clientY };
+};
+
 onMounted(() => {
-  // createNewBoard();
+  window.addEventListener('mousemove', handleMouseMove);
 });
 </script>
 
@@ -112,7 +121,7 @@ onMounted(() => {
       <GameSettings v-if="showSettings" @create-game="createNewGame" />
     </div>
     <div v-if="board.Id" class="m-4 text-center flex justify-center">
-      <div>{{board.Id}}</div>
+      <div class="text-xs text-gray-800">{{board.Id}}</div>
     </div>
     <div v-if="board.Id" class="m-4 text-center flex justify-center">
       <div id="board" class="m-4 justify-center relative">
@@ -128,6 +137,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <div v-if="stoneColor" :class="['cursor-stone', stoneColor]" :style="{ top: cursorPosition.y - 24 + 'px', left: cursorPosition.x - 24 + 'px' }"></div>
   </div>
 </template>
 
@@ -146,4 +156,25 @@ onMounted(() => {
   border-right: 1px solid #8b5a2b;
   border-bottom: 1px solid #8b5a2b
 }
+
+.cursor-stone {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.5;
+}
+
+.cursor-stone.black {
+  background: radial-gradient(circle at 30% 30%, #333, #000);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.cursor-stone.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
 </style>
