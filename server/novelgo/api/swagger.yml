@@ -81,25 +81,30 @@ paths:
         "404":
           description: "Game not found"
 definitions:
+  GameSettings:
+    type: "object"
+    required:
+      - BoardWidth
+      - BoardHeight
+      - CyclicLogic
+    properties:
+      BoardWidth:
+        type: "integer"
+      BoardHeight:
+        type: "integer"
+      CyclicLogic:
+        type: "boolean"
   Game:
     type: "object"
     required:
-      - Id
-      - Name
       - Settings
-      - Gameplay
     properties:
       Id:
         type: "string"
       Name:
         type: "string"
       Settings:
-        type: "object"
-        properties:
-          BoardWidth:
-            type: "integer"
-          BoardHeight:
-            type: "integer"
+        $ref: '#/definitions/GameSettings'
       Gameplay:
         type: "object"
         properties:
@@ -113,10 +118,8 @@ definitions:
               properties:
                 Row:
                   type: "integer"
-                  x-omitempty: false
                 Col:
                   type: "integer"
-                  x-omitempty: false
           BoardGridPoints:
             type: "array"
             items:

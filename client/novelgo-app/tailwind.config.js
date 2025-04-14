@@ -3,7 +3,17 @@ export default {
   darkMode: 'media',
   content: ['./index.html', './src/**/*.{vue, js, ts, jsx, tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        '13': 'repeat(13, minmax(0, 1fr))',
+        '14': 'repeat(14, minmax(0, 1fr))',
+        '15': 'repeat(15, minmax(0, 1fr))',
+        '16': 'repeat(16, minmax(0, 1fr))',
+        '17': 'repeat(17, minmax(0, 1fr))',
+        '18': 'repeat(18, minmax(0, 1fr))',
+        '19': 'repeat(19, minmax(0, 1fr))',
+      },
+    },
   },
   plugins: [],
   safelist: [
@@ -19,5 +29,12 @@ export default {
     'grid-cols-10',
     'grid-cols-11',
     'grid-cols-12',
+    'grid-cols-13',
+    'grid-cols-14',
+    'grid-cols-15',
+    'grid-cols-16',
+    'grid-cols-17',
+    'grid-cols-18',
+    'grid-cols-19',
   ],
 };

@@ -27,10 +27,10 @@ func ListGames() []*models.Game {
 // A new uuid will be generated for the new game
 func CreateGame(game *models.Game) (*models.Game, error) {
 	ID := uuid.New().String()
-	game.ID = &ID
-	games[*game.ID] = game
+	game.ID = ID
+	games[game.ID] = game
 
-	b := cyclic.NewBoard(int(game.Settings.BoardHeight), int(game.Settings.BoardWidth), true)
+	b := cyclic.NewBoard(int(*game.Settings.BoardHeight), int(*game.Settings.BoardWidth), *game.Settings.CyclicLogic)
 	arr := b.GetGridPointsAsArray()
 	game.Gameplay.BoardGridPoints = make([]int64, len(arr))
 	for i, s := range arr {
@@ -60,7 +60,7 @@ func UpdateGame(id string, game *models.Game) (*models.Game, error) {
 	fmt.Printf("last move = %v", lastMove)
 	*oldMoves = append(*oldMoves, lastMove)
 	fmt.Printf("oldMoves = %v", *oldMoves)
-	b := cyclic.NewBoard(int(game.Settings.BoardHeight), int(game.Settings.BoardWidth), true)
+	b := cyclic.NewBoard(int(*game.Settings.BoardHeight), int(*game.Settings.BoardWidth), *game.Settings.CyclicLogic)
 	for i, move := range *oldMoves {
 		fmt.Printf("oves = %v", move)
 		var color cyclic.GridPointState

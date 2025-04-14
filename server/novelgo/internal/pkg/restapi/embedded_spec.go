@@ -147,10 +147,7 @@ func init() {
     "Game": {
       "type": "object",
       "required": [
-        "Id",
-        "Name",
-        "Settings",
-        "Gameplay"
+        "Settings"
       ],
       "properties": {
         "Gameplay": {
@@ -172,12 +169,10 @@ func init() {
                 ],
                 "properties": {
                   "Col": {
-                    "type": "integer",
-                    "x-omitempty": false
+                    "type": "integer"
                   },
                   "Row": {
-                    "type": "integer",
-                    "x-omitempty": false
+                    "type": "integer"
                   }
                 }
               }
@@ -191,15 +186,26 @@ func init() {
           "type": "string"
         },
         "Settings": {
-          "type": "object",
-          "properties": {
-            "BoardHeight": {
-              "type": "integer"
-            },
-            "BoardWidth": {
-              "type": "integer"
-            }
-          }
+          "$ref": "#/definitions/GameSettings"
+        }
+      }
+    },
+    "GameSettings": {
+      "type": "object",
+      "required": [
+        "BoardWidth",
+        "BoardHeight",
+        "CyclicLogic"
+      ],
+      "properties": {
+        "BoardHeight": {
+          "type": "integer"
+        },
+        "BoardWidth": {
+          "type": "integer"
+        },
+        "CyclicLogic": {
+          "type": "boolean"
         }
       }
     }
@@ -335,10 +341,7 @@ func init() {
     "Game": {
       "type": "object",
       "required": [
-        "Id",
-        "Name",
-        "Settings",
-        "Gameplay"
+        "Settings"
       ],
       "properties": {
         "Gameplay": {
@@ -365,15 +368,7 @@ func init() {
           "type": "string"
         },
         "Settings": {
-          "type": "object",
-          "properties": {
-            "BoardHeight": {
-              "type": "integer"
-            },
-            "BoardWidth": {
-              "type": "integer"
-            }
-          }
+          "$ref": "#/definitions/GameSettings"
         }
       }
     },
@@ -402,23 +397,29 @@ func init() {
       ],
       "properties": {
         "Col": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
         },
         "Row": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
         }
       }
     },
     "GameSettings": {
       "type": "object",
+      "required": [
+        "BoardWidth",
+        "BoardHeight",
+        "CyclicLogic"
+      ],
       "properties": {
         "BoardHeight": {
           "type": "integer"
         },
         "BoardWidth": {
           "type": "integer"
+        },
+        "CyclicLogic": {
+          "type": "boolean"
         }
       }
     }
