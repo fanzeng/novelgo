@@ -194,13 +194,13 @@ func rmID(j string) (string, error) {
 			return "", errors.New("failed to unmarshal to single game object or array of game objects")
 		}
 		for i := range games {
-			games[i].ID = &empty
+			games[i].ID = empty
 		}
 		s, err := json.Marshal(games)
 		return string(s), nil
 	}
 	// Single object marshal succeeded
-	game.ID = &empty
+	game.ID = empty
 	s, err := json.Marshal(game)
 	return string(s), nil
 }
@@ -231,5 +231,5 @@ func createTestGame(gameJSON string, h *http.Handler) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return *game.ID, nil
+	return game.ID, nil
 }
