@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import GridPoint from '@/components/GridPoint.vue';
 import GameSettings from '@/components/GameSettings.vue';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 let game = {
   Id: '',
   Name: 'Untitled Game',
@@ -43,8 +45,9 @@ const createNewBoard = async (settings) => {
     Settings: settings,
     Gameplay: {}
   }
+  console.log(apiUrl)
   try {
-    const response = await fetch('http://localhost:58303/games', {
+    const response = await fetch(`${apiUrl}/games`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -75,7 +78,7 @@ const updateState = async (index) => {
   if (!game.Gameplay.PlayerMoves) game.Gameplay.PlayerMoves = [];
   game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w });
   try {
-    const response = await fetch(`http://127.0.0.1:58303/games/${game.Id}`, {
+    const response = await fetch(`${apiUrl}/games/${game.Id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
