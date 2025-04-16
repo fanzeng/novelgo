@@ -9,7 +9,6 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/rs/cors"
 
 	"novelgo/internal/pkg/handlers"
 	"novelgo/internal/pkg/models"
