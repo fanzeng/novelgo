@@ -92,14 +92,14 @@ func configureAPI(api *operations.NovelgoAPI) http.Handler {
 
 	api.ServerShutdown = func() {}
 
-	corsMiddleware := cors.New(cors.Options{
-        AllowedOrigins:   []string{"*"},
-        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-        AllowedHeaders:   []string{"Content-Type"},
-        AllowCredentials: true,
-    })
-
-    return setupGlobalMiddleware(corsMiddleware.Handler(api.Serve(setupMiddlewares)))
+	// corsMiddleware := cors.New(cors.Options{
+ //        AllowedOrigins:   []string{"*"},
+ //        AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+ //        AllowedHeaders:   []string{"Content-Type"},
+ //        AllowCredentials: true,
+ //    })
+	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
+    // return setupGlobalMiddleware(corsMiddleware.Handler(api.Serve(setupMiddlewares)))
 }
 
 // The TLS configuration before HTTPS server starts.
