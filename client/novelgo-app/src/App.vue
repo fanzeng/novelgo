@@ -84,7 +84,6 @@ const createNewBoard = async (settings) => {
 const updateState = async (index) => {
   const w = game.Settings.BoardWidth;
   if (!game.Gameplay.PlayerMoves) game.Gameplay.PlayerMoves = [];
-  console.log(game.Settings)
   game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w });
   await putGame();
   if (game.Settings.GameMode === 'ComputerOpponent') {
@@ -176,7 +175,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div v-if="!isMobile && stoneColor" :class="['next-stone cursor-stone', stoneColor]" :style="{ top: cursorPosition.y - 24 + 'px', left: cursorPosition.x - 24 + 'px' }"></div>
+    <div v-if="!isMobile && !(game.Settings.GameMode === 'ComputerOpponent' && moveNumber % 2 == 1) && stoneColor" :class="['next-stone cursor-stone', stoneColor]" :style="{ top: cursorPosition.y - 24 + 'px', left: cursorPosition.x - 24 + 'px' }"></div>
   </div>
 </template>
 
