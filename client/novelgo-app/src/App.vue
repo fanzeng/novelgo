@@ -34,6 +34,13 @@ const cursorPosition = ref({ x: 0, y: 0 });
 let stoneColor = 'empty';
 let moveNumber = ref(0);
 
+const isMobile = ref(false);
+const checkDeviceType = () => {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  isMobile.value = /android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+};
+
+
 const createNewGame = async (settings) => {
   showSettings.value = false;
   moveNumber.value = 0;
@@ -112,7 +119,10 @@ const handleMouseMove = (event) => {
 };
 
 onMounted(() => {
-  window.addEventListener('mousemove', handleMouseMove);
+  checkDeviceType();
+  if (!isMobile.value) {
+    window.addEventListener('mousemove', handleMouseMove);
+  }
 });
 </script>
 
@@ -136,6 +146,9 @@ onMounted(() => {
     <div v-if="board.id" class="m-4 text-center flex justify-center">
       <div>Cyclic: {{board.cyclicLogic}}</div>
     </div>
+    <div v-if="moveNumber > 0 && isMobile && stoneColor" class="m-4 text-center flex justify-center">
+      <span>Next stone:&nbsp;&nbsp;</span><span :class="['next-stone label-stone', stoneColor]"></span>
+    </div>
     <div v-if="board.id" class="m-4 text-center flex justify-center">
       <div id="board" class="m-4 justify-center relative">
         <div class="grid-lines"></div>
@@ -150,7 +163,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div v-if="stoneColor" :class="['cursor-stone', stoneColor]" :style="{ top: cursorPosition.y - 24 + 'px', left: cursorPosition.x - 24 + 'px' }"></div>
+    <div v-if="!isMobile && stoneColor" :class="['next-stone cursor-stone', stoneColor]" :style="{ top: cursorPosition.y - 24 + 'px', left: cursorPosition.x - 24 + 'px' }"></div>
   </div>
 </template>
 
@@ -170,8 +183,7 @@ onMounted(() => {
   border-bottom: 1px solid #8b5a2b
 }
 
-.cursor-stone {
-  position: absolute;
+.next-stone {
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -180,12 +192,21 @@ onMounted(() => {
   opacity: 0.5;
 }
 
-.cursor-stone.black {
-  background: radial-gradient(circle at 30% 30%, #333, #000);
+.label-stone {
+  position: relative;
+  bottom: 12px;
+}
+
+.cursor-stone {
+  position: absolute;
+}
+
+.next-stone.black {
+  background: radial-gradient(circle at 30% 30%, #666, #000);
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.3);
 }
 
-.cursor-stone.white {
+.next-stone.white {
   background: radial-gradient(circle at 30% 30%, #fff, #ccc);
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 5px 10px rgba(0, 0, 0, 0.3);
 }
