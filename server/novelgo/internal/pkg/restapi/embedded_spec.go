@@ -195,7 +195,8 @@ func init() {
       "required": [
         "BoardWidth",
         "BoardHeight",
-        "CyclicLogic"
+        "CyclicLogic",
+        "GameMode"
       ],
       "properties": {
         "BoardHeight": {
@@ -206,6 +207,9 @@ func init() {
         },
         "CyclicLogic": {
           "type": "boolean"
+        },
+        "GameMode": {
+          "type": "string"
         }
       }
     }
@@ -409,7 +413,8 @@ func init() {
       "required": [
         "BoardWidth",
         "BoardHeight",
-        "CyclicLogic"
+        "CyclicLogic",
+        "GameMode"
       ],
       "properties": {
         "BoardHeight": {
@@ -420,6 +425,9 @@ func init() {
         },
         "CyclicLogic": {
           "type": "boolean"
+        },
+        "GameMode": {
+          "type": "string"
         }
       }
     }

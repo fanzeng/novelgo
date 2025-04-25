@@ -30,6 +30,10 @@ type GameSettings struct {
 	// cyclic logic
 	// Required: true
 	CyclicLogic *bool `json:"CyclicLogic"`
+
+	// game mode
+	// Required: true
+	GameMode *string `json:"GameMode"`
 }
 
 // Validate validates this game settings
@@ -45,6 +49,10 @@ func (m *GameSettings) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateCyclicLogic(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGameMode(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -75,6 +83,15 @@ func (m *GameSettings) validateBoardWidth(formats strfmt.Registry) error {
 func (m *GameSettings) validateCyclicLogic(formats strfmt.Registry) error {
 
 	if err := validate.Required("CyclicLogic", "body", m.CyclicLogic); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GameSettings) validateGameMode(formats strfmt.Registry) error {
+
+	if err := validate.Required("GameMode", "body", m.GameMode); err != nil {
 		return err
 	}
 
