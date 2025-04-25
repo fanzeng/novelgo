@@ -33,7 +33,7 @@ func TestListGames(t *testing.T) {
 
 	// Test non-empty
 	// Post 1 item to server
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
 	_, err = createTestGame(gameJSON, &handler)
 	assert.NoError(t, err)
 	// Call the endpoint again, expecting the posted item
@@ -68,7 +68,7 @@ func TestGetGameByID(t *testing.T) {
 
 	// Test getting existing
 	// Post 1 item to server
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
 	gameID, err := createTestGame(gameJSON, &handler)
 	assert.NoError(t, err)
 	// Call the endpoint again, getting the posted item
@@ -93,7 +93,7 @@ func TestCreateGame(t *testing.T) {
 	defer server.Shutdown()
 
 	handler := configureAPI(api)
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
 	req, err := http.NewRequest("POST", "/games", strings.NewReader(gameJSON))
 	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
@@ -117,7 +117,7 @@ func TestPutGame(t *testing.T) {
 	// Update non-existent game
 	// Expect error
 	handler := configureAPI(api)
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":2,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":0,"Col":0}]}}`
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":2,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":0,"Col":0}]}}`
 	req, err := http.NewRequest("PUT", "/games/1", strings.NewReader(gameJSON))
 	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
@@ -131,7 +131,7 @@ func TestPutGame(t *testing.T) {
 
 	// Update the game by appending to player moves
 	// Expect success
-	updatedGameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":2,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":0,"Col":0},{"Row":0,"Col":1}],"BoardGridPoints":[1,3]}}`
+	updatedGameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":2,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":0,"Col":0},{"Row":0,"Col":1}],"BoardGridPoints":[1,3]}}`
 	req, err = http.NewRequest("PUT", "/games/"+gameID, strings.NewReader(updatedGameJSON))
 	assert.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
@@ -162,7 +162,7 @@ func TestDeleteGame(t *testing.T) {
 
 	// Test deleting existing
 	// Post 1 item to server
-	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
+	gameJSON := `{"Id":"1","Name":"Test game","Settings":{"BoardWidth":1,"BoardHeight":1,"CyclicLogic": true,"GameMode":"SelfStudy"},"Gameplay":{"PlayerMoves":[{"Row":1,"Col":1}],"BoardGridPoints":[0]}}`
 	gameID, err := createTestGame(gameJSON, &handler)
 	assert.NoError(t, err)
 	// Call the endpoint again, deleting the posted item

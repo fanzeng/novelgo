@@ -12,6 +12,7 @@ let game = {
     BoardWidth: 5,
     BoardHeight: 5,
     CyclicLogic: true,
+    GameMode: 'ComputerOpponent',
   },
   Gameplay: {
     PlayerMoves: []
@@ -83,7 +84,19 @@ const createNewBoard = async (settings) => {
 const updateState = async (index) => {
   const w = game.Settings.BoardWidth;
   if (!game.Gameplay.PlayerMoves) game.Gameplay.PlayerMoves = [];
+  console.log(game.Settings)
   game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(index / w), 'Col': index % w });
+  await putGame();
+  if (game.Settings.GameMode === 'ComputerOpponent') {
+    const size = w * game.Settings.BoardHeight;
+    let nextIndex = -1;
+    while (!(nextIndex >= 0 && nextIndex <= size && board.value.gridPoints[nextIndex] <= 1)) nextIndex = Math.floor(Math.random() * size);
+    game.Gameplay.PlayerMoves.push({ 'Row': Math.floor(nextIndex / w), 'Col': nextIndex % w });
+    await putGame();
+  }
+}
+
+const putGame = async () => {
   try {
     const response = await fetch(`${apiUrl}/games/${game.Id}`, {
       method: 'PUT',
