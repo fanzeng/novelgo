@@ -1,14 +1,14 @@
-name: Build
+name: Build Docker
 
 on:
   pull_request:
-    branches: [main]
-    types:
-      - closed
+    types: [labeled]
+    branches:
+      - master
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    if: contains(github.event.pull_request.labels.*.name, 'release')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
